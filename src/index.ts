@@ -11,6 +11,22 @@ const proxyTargetUrl = envConfig.PROXY_TARGET_URL ?? "http://localhost:3000";
 const env = process.env.NODE_ENV ?? "development";
 const allowedOrigins: string[] = envConfig.ALLOWED_ORIGINS.split(",") ?? [];
 
+// Connectivity check
+console.log(`Proxy target URL: ${proxyTargetUrl}`);
+// Ping the upstream server to check if it is reachable
+fetch(proxyTargetUrl)
+  .then(async (response: any) => {
+    if (response.ok) {
+      console.log("Upstream server is reachable");
+    } else {
+      console.warn("Upstream server is not reachable");
+    }
+  })
+  .catch((error: any) => {
+    console.error("Upstream server is not reachable", error);
+  });
+
+// Create the server
 async function createServer({ upstream }: { upstream: string }) {
   const server = fastify({
     logger: {
